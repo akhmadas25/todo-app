@@ -11,7 +11,7 @@ import { AntDesign } from "@expo/vector-icons";
 import colors from "../Colors";
 import dummy from "../dummy";
 
-export default class AddTodo extends React.Component {
+export default class AddTask extends React.Component {
   backgroundColors = [
     "#009DAE",
     "#FF87CA",
@@ -51,12 +51,16 @@ export default class AddTodo extends React.Component {
 
   render() {
     return (
-      <KeyboardAvoidingView style={styles.container} behavior="padding">
+      <KeyboardAvoidingView
+        style={styles.container}
+        keyboardVerticalOffset={-100}
+        behavior="padding"
+      >
         <TouchableOpacity
           style={{ position: "absolute", top: 32, right: 32 }}
           onPress={this.props.closeModal}
         >
-          <AntDesign name="close" color={colors.dark} size={35} />
+          <AntDesign name="close" color={colors.dark} size={30} />
         </TouchableOpacity>
 
         {/* main container */}

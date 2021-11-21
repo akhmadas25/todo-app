@@ -1,7 +1,7 @@
 import React from "react";
-import { render } from "react-dom";
 import { Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import colors from "../Colors";
+import TodoLists from "./TodoLists";
 
 export default class TaskLists extends React.Component {
   state = {
@@ -22,10 +22,9 @@ export default class TaskLists extends React.Component {
           visible={this.state.showTodo}
           onRequestClose={() => this.handleModal()}
         >
-          <View>
-            <Text>this is list todo</Text>
-          </View>
+          <TodoLists task={task} closeModal={() => this.handleModal()} />
         </Modal>
+
         <TouchableOpacity
           style={[styles.container, { backgroundColor: task.color }]}
           onPress={() => this.handleModal()}
@@ -33,6 +32,7 @@ export default class TaskLists extends React.Component {
           <Text style={styles.title} numberOfLines={1}>
             {task.name}
           </Text>
+
           <View>
             <View style={{ alignItems: "center", marginTop: 15 }}>
               <Text style={styles.completed}>{countRemaining}</Text>

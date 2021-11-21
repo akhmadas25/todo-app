@@ -12,11 +12,12 @@ import TaskLists from "./components/TaskLists";
 import colors from "./Colors";
 import { AntDesign } from "@expo/vector-icons";
 import dummy from "./dummy";
-import AddTodo from "./components/AddTodo";
+import AddTask from "./components/AddTask";
 
 export default class App extends React.Component {
   state = {
     addModalVisible: false,
+    tasks: dummy
   };
 
   renderTask = (task) => {
@@ -35,7 +36,7 @@ export default class App extends React.Component {
           visible={this.state.addModalVisible}
           onRequestClose={() => this.handleModal()}
         >
-          <AddTodo closeModal={() => this.handleModal()} />
+          <AddTask closeModal={() => this.handleModal()} />
         </Modal>
         <View style={{ flexDirection: "row" }}>
           <View style={styles.divider} />
@@ -60,7 +61,7 @@ export default class App extends React.Component {
         </View>
         <View style={{ height: 300, paddingLeft: 30 }}>
           <FlatList
-            data={dummy}
+            data={this.state.tasks}
             keyExtractor={(item) => item.name}
             horizontal={true}
             showsHorizontalScrollIndicator={false}
@@ -77,7 +78,8 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.grey,
     alignItems: "center",
-    justifyContent: "center",
+    // justifyContent: "center",
+    paddingTop: 125,
   },
   divider: {
     backgroundColor: "black",
@@ -87,7 +89,6 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 35,
-    paddingTop: 30,
     fontWeight: "bold",
     color: colors.dark,
     paddingHorizontal: 35,
