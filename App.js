@@ -19,8 +19,12 @@ export default class App extends React.Component {
     addModalVisible: false,
   };
 
+  renderTask = (task) => {
+    return <TaskLists task={task} />;
+  };
+
   handleModal() {
-    this.setState({ addModalVisible: true });
+    this.setState({ addModalVisible: !this.state.addModalVisible });
   }
 
   render() {
@@ -29,11 +33,9 @@ export default class App extends React.Component {
         <Modal
           animationType="slide"
           visible={this.state.addModalVisible}
-          onRequestClose={() => {
-            this.setState({ addModalVisible: false });
-          }}
+          onRequestClose={() => this.handleModal()}
         >
-          <AddTodo />
+          <AddTodo closeModal={() => this.handleModal()} />
         </Modal>
         <View style={{ flexDirection: "row" }}>
           <View style={styles.divider} />
@@ -62,7 +64,7 @@ export default class App extends React.Component {
             keyExtractor={(item) => item.name}
             horizontal={true}
             showsHorizontalScrollIndicator={false}
-            renderItem={({ item }) => <TaskLists task={item} />}
+            renderItem={({ item }) => this.renderTask(item)}
           />
         </View>
       </View>
@@ -85,6 +87,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 35,
+    paddingTop: 30,
     fontWeight: "bold",
     color: colors.dark,
     paddingHorizontal: 35,
