@@ -7,26 +7,44 @@ import {
   TouchableOpacity,
   FlatList,
   TextInput,
+  Keyboard,
 } from "react-native";
 import colors from "../Colors";
 import { AntDesign, Ionicons } from "@expo/vector-icons";
 
 export default class TodoLists extends React.Component {
   state = {
-    name: this.props.task.name,
-    color: this.props.task.color,
-    todos: this.props.task.todos,
+    newTodo: "",
   };
 
-  renderTodo = (todo) => {
+  handleComplete = (index) => {
+    let task = this.props.task;
+    task.todos[index].isCompleted = !task.todos[index].isCompleted;
+
+    this.props.updateTask(task);
+  };
+
+  addTodo = () => {
+    let task = this.props.task;
+    task.todos.push({ title: this.state.newTodo, isCompleted: false });
+
+    this.props.updateTask(task);
+    this.setState({ newTodo: "" });
+    Keyboard.dismiss();
+  };
+
+  renderTodo = (todo, index) => {
     return (
-      <View style={styles.todo}>
-        <TouchableOpacity style={{ paddingRight: 5 }}>
+      <View style={styles.todoContainer}>
+        <TouchableOpacity
+          style={{ paddingRight: 5 }}
+          onPress={() => this.handleComplete(index)}
+        >
           <Ionicons
             name={
               todo.isCompleted ? "ios-checkmark-done" : "ios-square-outline"
             }
-            color={todo.isCompleted ? this.state.color : colors.dark}
+            color={todo.isCompleted ? this.props.task.color : colors.dark}
             size={20}
           />
         </TouchableOpacity>
@@ -35,7 +53,7 @@ export default class TodoLists extends React.Component {
             styles.todo,
             {
               textDecorationLine: todo.isCompleted ? "line-through" : "none",
-              color: todo.isCompleted ? this.state.color : colors.dark,
+              color: todo.isCompleted ? this.props.task.color : colors.dark,
             },
           ]}
         >
@@ -46,10 +64,9 @@ export default class TodoLists extends React.Component {
   };
 
   render() {
-    const todoCount = this.state.todos.length;
-    const completedTodo = this.state.todos.filter(
-      (todo) => todo.isCompleted
-    ).length;
+    const task = this.props.task;
+    const todoCount = task.todos.length;
+    const completedTodo = task.todos.filter((todo) => todo.isCompleted).length;
     return (
       <SafeAreaView style={styles.container}>
         <TouchableOpacity
@@ -61,7 +78,7 @@ export default class TodoLists extends React.Component {
 
         <View style={[styles.section, styles.header]}>
           <View>
-            <Text style={styles.title}>{this.state.name}</Text>
+            <Text style={styles.title}>{task.name}</Text>
             <Text style={styles.count}>
               {completedTodo} of {todoCount} completed
             </Text>
@@ -69,8 +86,8 @@ export default class TodoLists extends React.Component {
         </View>
         <View style={[styles.section, { flex: 3 }]}>
           <FlatList
-            data={this.state.todos}
-            renderItem={({ item }) => this.renderTodo(item)}
+            data={task.todos}
+            renderItem={({ item, index }) => this.renderTodo(item, index)}
             keyExtractor={(item) => item.title}
             contentContainerStyle={{
               paddingHorizontal: 30,
@@ -81,12 +98,15 @@ export default class TodoLists extends React.Component {
         </View>
         <View style={[styles.section, styles.footer]}>
           <TextInput
-            style={[styles.input, { borderColor: this.state.color }]}
+            style={[styles.input, { borderColor: task.color }]}
+            onChangeText={(text) => this.setState({ newTodo: text })}
+            value={this.state.newTodo}
           />
           <TouchableOpacity
-            style={[styles.button, { color: this.state.color }]}
+            style={[styles.button, { color: task.color }]}
+            onPress={() => this.addTodo()}
           >
-            <AntDesign name="plussquare" color={this.state.color} size={40} />
+            <AntDesign name="plussquare" color={task.color} size={40} />
           </TouchableOpacity>
         </View>
       </SafeAreaView>
@@ -118,7 +138,7 @@ const styles = StyleSheet.create({
   },
   count: {
     marginBottom: 8,
-    color: colors.grey,
+    color: colors.dark,
   },
   footer: {
     paddingHorizontal: 30,
@@ -133,11 +153,14 @@ const styles = StyleSheet.create({
     height: 40,
     paddingHorizontal: 10,
   },
-  todo: {
+  todoContainer: {
     paddingVertical: 10,
     flexDirection: "row",
     alignItems: "center",
+  },
+  todo: {
     fontSize: 20,
     fontWeight: "bold",
+    color: colors.dark,
   },
 });

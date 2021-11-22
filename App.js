@@ -7,6 +7,7 @@ import {
   View,
   FlatList,
   Modal,
+  ListViewBase,
 } from "react-native";
 import TaskLists from "./components/TaskLists";
 import colors from "./Colors";
@@ -17,16 +18,33 @@ import AddTask from "./components/AddTask";
 export default class App extends React.Component {
   state = {
     addModalVisible: false,
-    tasks: dummy
-  };
-
-  renderTask = (task) => {
-    return <TaskLists task={task} />;
+    tasks: dummy,
   };
 
   handleModal() {
     this.setState({ addModalVisible: !this.state.addModalVisible });
   }
+
+  renderTask = (task) => {
+    return <TaskLists task={task} updateTask={this.updateTask} />;
+  };
+
+  addTask = (task) => {
+    this.setState({
+      tasks: [
+        ...this.state.tasks,
+        { ...task, id: this.state.tasks.length + 1, todos: [] },
+      ],
+    });
+  };
+
+  updateTask = (task) => {
+    this.setState({
+      tasks: this.state.tasks.map((item) => {
+        return item.id === task.id ? task : item;
+      }),
+    });
+  };
 
   render() {
     return (
@@ -36,7 +54,10 @@ export default class App extends React.Component {
           visible={this.state.addModalVisible}
           onRequestClose={() => this.handleModal()}
         >
-          <AddTask closeModal={() => this.handleModal()} />
+          <AddTask
+            closeModal={() => this.handleModal()}
+            addTask={this.addTask}
+          />
         </Modal>
         <View style={{ flexDirection: "row" }}>
           <View style={styles.divider} />
@@ -66,6 +87,7 @@ export default class App extends React.Component {
             horizontal={true}
             showsHorizontalScrollIndicator={false}
             renderItem={({ item }) => this.renderTask(item)}
+            keyboardShouldPersistTaps="always"
           />
         </View>
       </View>

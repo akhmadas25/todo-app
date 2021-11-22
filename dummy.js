@@ -1,5 +1,6 @@
 export default dummy = [
   {
+    id: 1,
     name: "Frontend task",
     color: "#2940D3",
     todos: [
@@ -14,6 +15,7 @@ export default dummy = [
     ],
   },
   {
+    id: 2,
     name: "Backend task",
     color: "#AA14F0",
     todos: [
@@ -28,6 +30,7 @@ export default dummy = [
     ],
   },
   {
+    id: 3,
     name: "Deploy apk",
     color: "#E9A6A6",
     todos: [

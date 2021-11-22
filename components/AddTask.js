@@ -28,11 +28,8 @@ export default class AddTask extends React.Component {
   addTodo = () => {
     const { name, color } = this.state;
 
-    dummy.push({
-      name,
-      color,
-      todos: [],
-    });
+    const task = { name, color };
+    this.props.addTask(task);
     this.setState({ name: "" });
     this.props.closeModal();
   };

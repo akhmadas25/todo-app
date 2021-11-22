@@ -22,7 +22,11 @@ export default class TaskLists extends React.Component {
           visible={this.state.showTodo}
           onRequestClose={() => this.handleModal()}
         >
-          <TodoLists task={task} closeModal={() => this.handleModal()} />
+          <TodoLists
+            task={task}
+            closeModal={() => this.handleModal()}
+            updateTask={this.props.updateTask}
+          />
         </Modal>
 
         <TouchableOpacity
