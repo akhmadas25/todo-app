@@ -54,6 +54,9 @@ export default class App extends React.Component {
 
   componentDidUpdate() {
     this.updateTask();
+    axios.get(API_URL).then((res) => {
+      this.setState({ tasks: res.data });
+    });
   }
 
   render() {

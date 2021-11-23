@@ -14,7 +14,6 @@ import colors from "../Colors";
 import { AntDesign, Ionicons } from "@expo/vector-icons";
 import { API_URL } from "../config/api";
 import axios from "axios";
-import { Swipeable } from "react-native-gesture-handler";
 
 export default class TodoLists extends React.Component {
   state = {
@@ -34,58 +33,82 @@ export default class TodoLists extends React.Component {
     this.props.updateTask(task);
   };
 
-  addTodo = () => {
+  addTodo = async () => {
     let task = this.props.task;
     task.todos.push({ title: this.state.newTodo, isCompleted: false });
-
+    try {
+      const response = await axios.put(API_URL + task.id, {
+        todos: task.todos,
+      });
+    } catch (error) {
+      alert(error);
+    }
     this.props.updateTask(task);
     this.setState({ newTodo: "" });
     Keyboard.dismiss();
   };
 
-  rightAction = (dragX, index) =>{
-    return (
-      <TouchableOpacity>
-        <Animated.View>
-          <Animated.Text>
-            delete
-          </Animated.Text>
-        </Animated.View>
-      </TouchableOpacity>
-    )
-  }
+  deleteTodo = async (index) => {
+    let task = this.props.task;
+    task.todos.splice(index, 1);
+    try {
+      const response = await axios.put(API_URL + task.id, {
+        todos: task.todos,
+      });
+    } catch (error) {
+      alert(error);
+    }
+
+    this.props.updateTask(task);
+  };
+
+  deleteTask = async () => {
+    let task = this.props.task;
+    try {
+      const response = await axios.delete(API_URL + task.id, {
+        todos: task.todos,
+      });
+    } catch (error) {
+      alert(error);
+    }
+
+    this.props.updateTask(task);
+  };
 
   renderTodo = (todo, index) => {
     return (
-      <Swipeable
-        renderRightAction={(_, dragX) => this.rightAction(dragX, index)}
-      >
-        <View style={styles.todoContainer}>
-          <TouchableOpacity
-            style={{ paddingRight: 5 }}
-            onPress={() => this.handleComplete(index)}
-          >
-            <Ionicons
-              name={
-                todo.isCompleted ? "ios-checkmark-done" : "ios-square-outline"
-              }
-              color={todo.isCompleted ? this.props.task.color : colors.dark}
-              size={20}
-            />
-          </TouchableOpacity>
-          <Text
-            style={[
-              styles.todo,
-              {
-                textDecorationLine: todo.isCompleted ? "line-through" : "none",
-                color: todo.isCompleted ? this.props.task.color : colors.dark,
-              },
-            ]}
-          >
-            {todo.title}
-          </Text>
-        </View>
-      </Swipeable>
+      <View style={styles.todoContainer}>
+        <TouchableOpacity
+          style={{ paddingRight: 5 }}
+          onPress={() => this.handleComplete(index)}
+        >
+          <Ionicons
+            name={
+              todo.isCompleted ? "ios-checkmark-done" : "ios-square-outline"
+            }
+            color={todo.isCompleted ? this.props.task.color : colors.dark}
+            size={20}
+          />
+        </TouchableOpacity>
+        <Text
+          style={[
+            styles.todo,
+            {
+              textDecorationLine: todo.isCompleted ? "line-through" : "none",
+              color: todo.isCompleted ? this.props.task.color : colors.dark,
+            },
+          ]}
+        >
+          {todo.title}
+        </Text>
+
+        <TouchableOpacity
+          style={styles.deleteButton}
+          onPress={() => this.deleteTodo()}
+        >
+          <AntDesign name="closesquareo" color={colors.red} size={20} />
+        </TouchableOpacity>
+      </View>
     );
   };
 
@@ -100,6 +123,17 @@ export default class TodoLists extends React.Component {
           onPress={this.props.closeModal}
         >
           <AntDesign name="close" color={colors.dark} size={30} />
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={{ position: "absolute", top: 70, right: 20, zIndex: 10 }}
+          onPress={() => this.deleteTask()}
+        >
+          <Ionicons
+            name="ios-checkmark-done-outline"
+            color={colors.lightBlue}
+            size={32}
+          />
         </TouchableOpacity>
 
         <View style={[styles.section, styles.header]}>
@@ -188,5 +222,10 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "bold",
     color: colors.dark,
+  },
+  deleteButton: {
+    paddingHorizontal: 16,
+    marginLeft: 50,
+    borderRadius: 5,
   },
 });
