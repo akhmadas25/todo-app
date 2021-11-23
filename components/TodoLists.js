@@ -8,19 +8,29 @@ import {
   FlatList,
   TextInput,
   Keyboard,
+  Animated,
 } from "react-native";
 import colors from "../Colors";
 import { AntDesign, Ionicons } from "@expo/vector-icons";
+import { API_URL } from "../config/api";
+import axios from "axios";
+import { Swipeable } from "react-native-gesture-handler";
 
 export default class TodoLists extends React.Component {
   state = {
     newTodo: "",
   };
 
-  handleComplete = (index) => {
+  handleComplete = async (index) => {
     let task = this.props.task;
     task.todos[index].isCompleted = !task.todos[index].isCompleted;
+    const data = task.todos;
 
+    try {
+      const response = await axios.put(API_URL + task.id, { todos: data });
+    } catch (error) {
+      alert(error);
+    }
     this.props.updateTask(task);
   };
 
@@ -33,33 +43,49 @@ export default class TodoLists extends React.Component {
     Keyboard.dismiss();
   };
 
+  rightAction = (dragX, index) =>{
+    return (
+      <TouchableOpacity>
+        <Animated.View>
+          <Animated.Text>
+            delete
+          </Animated.Text>
+        </Animated.View>
+      </TouchableOpacity>
+    )
+  }
+
   renderTodo = (todo, index) => {
     return (
-      <View style={styles.todoContainer}>
-        <TouchableOpacity
-          style={{ paddingRight: 5 }}
-          onPress={() => this.handleComplete(index)}
-        >
-          <Ionicons
-            name={
-              todo.isCompleted ? "ios-checkmark-done" : "ios-square-outline"
-            }
-            color={todo.isCompleted ? this.props.task.color : colors.dark}
-            size={20}
-          />
-        </TouchableOpacity>
-        <Text
-          style={[
-            styles.todo,
-            {
-              textDecorationLine: todo.isCompleted ? "line-through" : "none",
-              color: todo.isCompleted ? this.props.task.color : colors.dark,
-            },
-          ]}
-        >
-          {todo.title}
-        </Text>
-      </View>
+      <Swipeable
+        renderRightAction={(_, dragX) => this.rightAction(dragX, index)}
+      >
+        <View style={styles.todoContainer}>
+          <TouchableOpacity
+            style={{ paddingRight: 5 }}
+            onPress={() => this.handleComplete(index)}
+          >
+            <Ionicons
+              name={
+                todo.isCompleted ? "ios-checkmark-done" : "ios-square-outline"
+              }
+              color={todo.isCompleted ? this.props.task.color : colors.dark}
+              size={20}
+            />
+          </TouchableOpacity>
+          <Text
+            style={[
+              styles.todo,
+              {
+                textDecorationLine: todo.isCompleted ? "line-through" : "none",
+                color: todo.isCompleted ? this.props.task.color : colors.dark,
+              },
+            ]}
+          >
+            {todo.title}
+          </Text>
+        </View>
+      </Swipeable>
     );
   };
 

@@ -9,7 +9,8 @@ import {
 } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
 import colors from "../Colors";
-import dummy from "../dummy";
+import axios from "axios";
+import { API_URL } from "../config/api";
 
 export default class AddTask extends React.Component {
   backgroundColors = [
@@ -25,11 +26,15 @@ export default class AddTask extends React.Component {
     color: this.backgroundColors[0],
   };
 
-  addTodo = () => {
+  addTask = async () => {
     const { name, color } = this.state;
 
-    const task = { name, color };
-    this.props.addTask(task);
+    const task = { name, color, todos: [] };
+    try {
+      const response = await axios.post(API_URL, task)
+    } catch (error) {
+      alert(error)
+    }
     this.setState({ name: "" });
     this.props.closeModal();
   };
@@ -89,7 +94,7 @@ export default class AddTask extends React.Component {
 
           <TouchableOpacity
             style={[styles.button, { backgroundColor: this.state.color }]}
-            onPress={this.addTodo}
+            onPress={() =>this.addTask()}
           >
             <Text style={{ color: "white", fontSize: 20, fontWeight: "600" }}>
               Add

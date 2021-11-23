@@ -7,18 +7,18 @@ import {
   View,
   FlatList,
   Modal,
-  ListViewBase,
 } from "react-native";
 import TaskLists from "./components/TaskLists";
 import colors from "./Colors";
 import { AntDesign } from "@expo/vector-icons";
-import dummy from "./dummy";
 import AddTask from "./components/AddTask";
+import { API_URL } from "./config/api";
+import axios from "axios";
 
 export default class App extends React.Component {
   state = {
     addModalVisible: false,
-    tasks: dummy,
+    tasks: [],
   };
 
   handleModal() {
@@ -29,7 +29,7 @@ export default class App extends React.Component {
     return <TaskLists task={task} updateTask={this.updateTask} />;
   };
 
-  addTask = (task) => {
+  addTask = async (task) => {
     this.setState({
       tasks: [
         ...this.state.tasks,
@@ -38,13 +38,23 @@ export default class App extends React.Component {
     });
   };
 
-  updateTask = (task) => {
+  updateTask = async (task) => {
     this.setState({
       tasks: this.state.tasks.map((item) => {
         return item.id === task.id ? task : item;
       }),
     });
   };
+
+  componentDidMount() {
+    axios.get(API_URL).then((res) => {
+      this.setState({ tasks: res.data });
+    });
+  }
+
+  componentDidUpdate() {
+    this.updateTask();
+  }
 
   render() {
     return (
@@ -83,7 +93,7 @@ export default class App extends React.Component {
         <View style={{ height: 300, paddingLeft: 30 }}>
           <FlatList
             data={this.state.tasks}
-            keyExtractor={(item) => item.name}
+            keyExtractor={(item) => item.id}
             horizontal={true}
             showsHorizontalScrollIndicator={false}
             renderItem={({ item }) => this.renderTask(item)}
